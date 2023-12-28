@@ -1,0 +1,14 @@
+opencv-python
+mss
+timm
+dataclasses
+ftfy
+regex
+fasttext
+scikit-learn
+scikit-image==0.19.0
+pillow==8.4.0
+lvis
+nltk
+cog
+# git+https://github.com/openai/CLIP.git
