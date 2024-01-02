@@ -26,7 +26,7 @@ from ..debug import debug_second_stage
 
 from torch.cuda.amp import autocast
 
-from draw_box import draw_boxes
+# from draw_box import draw_boxes
 
 @ROI_HEADS_REGISTRY.register()
 class DeticCascadeROIHeads(CascadeROIHeads):

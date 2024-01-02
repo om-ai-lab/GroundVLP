@@ -4,9 +4,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage import filters
 
-from albef.models.tokenization_bert import BertTokenizer
-from albef.models.vit import VisionTransformer
-from albef.models.xbert import BertConfig, BertModel
+from models.albef.models.tokenization_bert import BertTokenizer
+from models.albef.models.vit import VisionTransformer
+from models.albef.models.xbert import BertConfig, BertModel
 from skimage import transform as skimage_transform
 
 import torch

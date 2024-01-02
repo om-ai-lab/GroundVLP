@@ -3,20 +3,24 @@ import json
 import os
 from tqdm import tqdm
 from models.albef.engine import ALBEF
+from models.vlp_model_builder import VLPModelBuilder
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_folder", default="/data9/shz/dataset/coco/train2014", type=str)
-    parser.add_argument("--eval_data", default="refcoco+_testA", type=str)
-    parser.add_argument("--model_id", default="ALBEF", type=str)
-    parser.add_argument("--use_gt_category", action='store_true', default=True)
+    parser.add_argument("--eval_data", default="refcoco_val,refcoco_testA,refcoco_testB,refcoco+_val,refcoco+_testA,refcoco+_testB,refcocog_val,refcocog_test", type=str)
+    parser.add_argument("--model_id", default="ALBEF", type=str, choices=["ALBEF", "TCL"])
+    parser.add_argument("--device", default="cuda", type=str)
+    parser.add_argument("--use_gt_category", action='store_true')
     args = parser.parse_args()
 
     eval_datas = args.eval_data.split(',')
+    data_path = './data' if args.use_gt_category else './data/pc'
     for task in eval_datas:
-        m = json.load(open(f"./data/{task}_info_pc.json"))
+        m = json.load(open(os.path.join(data_path, f'{task}_info.json')))
         data = []
-        engine = ALBEF(model_id=args.model_id)
+        engine = VLPModelBuilder()(model_id=args.model_id)   
+        print(type(engine))
 
         for x in m:
             img_name = x['file_name']

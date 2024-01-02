@@ -15,7 +15,7 @@ from .modeling.utils import reset_cls_test
 
 
 def get_clip_embeddings(vocabulary, prompt='a '):
-    from detic.modeling.text.text_encoder import build_text_encoder
+    from Detic.detic.modeling.text.text_encoder import build_text_encoder
     text_encoder = build_text_encoder(pretrain=True)
     text_encoder.eval()
     texts = [prompt + x for x in vocabulary]

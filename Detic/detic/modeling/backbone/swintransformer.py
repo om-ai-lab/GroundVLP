@@ -21,6 +21,11 @@ from detectron2.modeling.backbone.backbone import Backbone
 from detectron2.modeling.backbone.build import BACKBONE_REGISTRY
 from detectron2.modeling.backbone.fpn import FPN
 
+import os
+import sys
+cur_dir = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(cur_dir, "../../../", "third_party/CenterNet2"))
+
 from centernet.modeling.backbone.fpn_p5 import LastLevelP6P7_P5
 from centernet.modeling.backbone.bifpn import BiFPN
 # from .checkpoint import load_checkpoint

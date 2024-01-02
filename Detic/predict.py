@@ -83,19 +83,19 @@ text_encoder.eval()
 
 def get_clip_embeddings(vocabulary, prompt='a ', permute=True):
     texts = [prompt + x for x in vocabulary]
-    if permute:
-        emb = text_encoder(texts).detach().permute(1, 0).contiguous()
-    else:
-        emb = text_encoder(texts).detach()
+    with torch.no_grad():
+        if permute:
+            emb = text_encoder(texts).detach().permute(1, 0).contiguous()
+        else:
+            emb = text_encoder(texts).detach()
     return emb
-
 
 predictor = Predictor()
 predictor.setup()
 emb_person = get_clip_embeddings(['person'], permute=False)
-#
+
 detic_boxes = {}
-# detic_boxes_coco = {}
+
 with open('./Detic/json_files/detic_boxes_rec_scores_015.json') as f:
     detic_boxes = json.load(f)
     print('detic_boxes has been loaded...')
@@ -104,55 +104,64 @@ with open('./Detic/json_files/id_to_proposals_rec.json') as f:
     all_proposals_refcoco = json.load(f)
     print('json of all rec proposals has been loaded...')
 
-# def get_bbox_by_detic_rec(path, category, threshold_set):
-#     image_name = path.split('/')[-1]
-#     name = image_name.replace(".jpg", "").split("_")[-1]
-#     image_id = str(int(name))
-
-#     instances = predictor.predict(path, 'custom', category, threshold_set)
-#     boxes_category = instances.pred_boxes.tensor.tolist()
-#     od_scores = instances.scores.tolist()
-
-#     assert len(boxes_category) == len(od_scores)
-#     if len(boxes_category) == 0:
-#         boxes_category = all_proposals_refcoco[image_id]
-#         od_scores = None
-#     return boxes_category, od_scores
-
-
-def get_bbox_by_detic_rec(path, category, threshold_set):
+def get_bbox_by_detic_rec(path, category, threshold_set, unk=False):
     image_name = path.split('/')[-1]
     name = image_name.replace(".jpg", "").split("_")[-1]
     image_id = str(int(name))
-        
-    if category in detic_boxes[image_id].keys():
-        boxes_category, od_scores = detic_boxes[image_id][category]
-        if len(boxes_category) > 0:
-            while od_scores[-1] < threshold_set:
-                od_scores.pop()
-                boxes_category.pop()
-                if len(boxes_category)==0:
-                    break
-    else:
-        instances = predictor.predict(path, 'custom', category, threshold_set)
-        boxes_category = instances.pred_boxes.tensor.tolist()
-        od_scores = instances.scores.tolist()
-    assert len(boxes_category)==len(od_scores)
-    if len(boxes_category)==0:
+
+    if unk:
+        boxes_category = all_proposals_refcoco[image_id]
+        od_scores = None
+        return boxes_category, od_scores
+
+    instances = predictor.predict(path, 'custom', category, threshold_set)
+    boxes_category = instances.pred_boxes.tensor.tolist()
+    od_scores = instances.scores.tolist()
+
+    assert len(boxes_category) == len(od_scores)
+    if len(boxes_category) == 0:
         boxes_category = all_proposals_refcoco[image_id]
         od_scores = None
     return boxes_category, od_scores
 
-#
-# def get_bbox_by_detic_coco(path):
+def get_bbox_by_detic_rec_general(path, category, threshold_set):
+    boxes_category = []
+    od_scores = []
+    while len(boxes_category) == 0:
+        instances = predictor.predict(path, 'custom', category, threshold_set)
+        boxes_category = instances.pred_boxes.tensor.tolist()
+        od_scores = instances.scores.tolist()
+        threshold_set /= 2
+    return boxes_category, od_scores
+
+# def get_bbox_by_detic_rec(path, category, threshold_set, unk=False):
 #     image_name = path.split('/')[-1]
-#     if image_name in detic_boxes_coco.keys():
-#         return detic_boxes_coco[image_name]
+#     name = image_name.replace(".jpg", "").split("_")[-1]
+#     image_id = str(int(name))
+
+#     if unk:
+#         boxes_category = all_proposals_refcoco[image_id]
+#         od_scores = None
+#         return boxes_category, od_scores
+        
+#     if category in detic_boxes[image_id].keys():
+#         boxes_category, od_scores = detic_boxes[image_id][category]
+#         if len(boxes_category) > 0:
+#             while od_scores[-1] < threshold_set:
+#                 od_scores.pop()
+#                 boxes_category.pop()
+#                 if len(boxes_category)==0:
+#                     break
 #     else:
-#         instances = predictor.predict(path, 'coco', None)
-#         detic_boxes_coco[image_name] = instances.pred_boxes.tensor.tolist()
-#         return detic_boxes_coco[image_name]
-#
+#         instances = predictor.predict(path, 'custom', category, threshold_set)
+#         boxes_category = instances.pred_boxes.tensor.tolist()
+#         od_scores = instances.scores.tolist()
+#     assert len(boxes_category)==len(od_scores)
+#     if len(boxes_category)==0:
+#         boxes_category = all_proposals_refcoco[image_id]
+#         od_scores = None
+#     return boxes_category, od_scores
+
 #
 # def save_detic_boxes():
 #     with open(f'/content/drive/MyDrive/VL-CheckList/pkls/detic_boxes.pkl', 'wb') as f:

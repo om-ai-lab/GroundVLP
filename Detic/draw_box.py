@@ -35,29 +35,13 @@ def random_bgr(cls):
         return b, g, r
 
 
-# def draw_boxes(image_path: str, box_list: list, word_list: list):
-#     assert len(box_list)==len(word_list)
-#
-#     im = cv2.imread(image_path)
-#     # blk = np.zeros(im.shape, np.uint8)
-#     # white_blk = np.ones(im.shape, np.uint8) * 255
-#
-#     for box, word in zip(box_list, word_list):
-#         x1, y1, x2, y2 = box
-#         # b, g, r = random_bgr(word)
-#         # t_size = cv2.getTextSize(word, cv2.FONT_HERSHEY_TRIPLEX,0.6, 1)[0]
-#         # ptLeftTop = np.array([x1+2, y1+2])
-#         # textlbottom = ptLeftTop + np.array(list(t_size))
-#
-#         im = cv2.rectangle(im, (x1, y1), (x2, y2), (255, 100, 10), 3)
-#         # blk = cv2.rectangle(blk, tuple(ptLeftTop), tuple(textlbottom), (255, 255, 255), -1)
-#         # ptLeftTop[1] = ptLeftTop[1] + (t_size[1] / 2 + 4)
-#         # blk = cv2.putText(blk, word, tuple(ptLeftTop), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 1)
-#
-#     # im = cv2.addWeighted(im, 1.0, blk, 1, 1)
-#     # im = cv2.addWeighted(im, 1.0, white_blk, 0.1, 1)
-#
-#     cv2.imwrite('./output/test/box_image.jpg', im)
+def draw_boxes_cv2(image_path: str, box_list: list):
+    im = cv2.imread(image_path)
+    for box in box_list:
+        box = [int(z) for z in box]
+        x1, y1, x2, y2 = box
+        im = cv2.rectangle(im, (x1, y1), (x2, y2), (255, 100, 10), 3)
+    return im
 
 def draw_boxes(image_path: str,
                box_list: list,
