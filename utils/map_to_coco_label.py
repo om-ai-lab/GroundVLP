@@ -12,7 +12,7 @@ import torch
 from torch.nn import functional as F
 
 
-with open('./data/coco_80.txt', 'r') as f:
+with open('./coco_80.txt', 'r') as f:
     word_list = f.readlines()
 word_list = [word.strip() for word in word_list]
 prompt = 'a photo of '

@@ -24,7 +24,7 @@ class ALBEF(VLPModel):
 
         if not self._models.has(model_id):
             tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-            model = VL_Transformer_ITM(text_encoder='bert-base-uncased',
+            model = VL_Transformer_ITM(text_encoder='/data9/shz/ckpt/bert-base-uncased',
                                        config_bert=os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                                 'config_bert.json'))
             checkpoint_path = os.path.join(self.checkpoint_dir, f'{model_id}.pth')
